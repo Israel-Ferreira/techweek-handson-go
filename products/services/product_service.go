@@ -5,6 +5,7 @@ import (
 
 	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
+	"github.com/Israel-Ferreira/techweek-hands-on/products/repositories"
 )
 
 type ProductService interface {
@@ -15,7 +16,9 @@ type ProductService interface {
 	UpdateProduct(context.Context, string, data.UpdateProduct) error
 }
 
-type productService struct{}
+type productService struct {
+	repo *repositories.ProductRepository
+}
 
 func (s *productService) GetProducts(ctx context.Context) []models.Product {
 	return nil
@@ -37,6 +40,8 @@ func (s *productService) CreateProduct(ctx context.Context, dto data.CreateProdu
 	return "", nil
 }
 
-func NewProductService() *productService {
-	return &productService{}
+func NewProductService(repo *repositories.ProductRepository) *productService {
+	return &productService{
+		repo: repo,
+	}
 }
