@@ -31,3 +31,7 @@ func (r *repository) Delete(sku string) error {
 func (r *repository) Create(product models.Product) (string, error) {
 	return "", nil
 }
+
+func NewRepository() ProductRepository {
+	return &repository{}
+}

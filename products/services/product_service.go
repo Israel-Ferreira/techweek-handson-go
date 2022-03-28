@@ -10,8 +10,8 @@ import (
 
 type ProductService interface {
 	CreateProduct(context.Context, data.CreateProduct) (string, error)
-	GetProducts(ctx context.Context) []models.Product
-	GetProductBySku(context.Context, string) models.Product
+	GetProducts(ctx context.Context) ([]models.Product, error)
+	GetProductBySku(context.Context, string) (models.Product, error)
 	DeleteBySku(context.Context, string) error
 	UpdateProduct(context.Context, string, data.UpdateProduct) error
 }
@@ -20,12 +20,12 @@ type productService struct {
 	repo *repositories.ProductRepository
 }
 
-func (s *productService) GetProducts(ctx context.Context) []models.Product {
-	return nil
+func (s *productService) GetProducts(ctx context.Context) ([]models.Product, error) {
+	return nil, nil
 }
 
-func (s *productService) GetProductBySku(ctx context.Context, sku string) models.Product {
-	return models.NewProduct()
+func (s *productService) GetProductBySku(ctx context.Context, sku string) (models.Product, error) {
+	return models.NewProduct(), nil
 }
 
 func (s *productService) DeleteBySku(ctx context.Context, sku string) error {
