@@ -1,5 +1,7 @@
 FROM golang:1.18
 
+WORKDIR /go/products
+
 COPY go.mod .
 
 COPY go.sum .
