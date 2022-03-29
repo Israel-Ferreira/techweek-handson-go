@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Israel-Ferreira/techweek-hands-on/products/config"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/repositories"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/services"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/transport"
@@ -16,9 +17,11 @@ func main() {
 
 	var logger log.Logger
 	logger = log.NewLogfmtLogger(os.Stderr)
-	logger = log.With(logger, "listen", "8081", "caller", log.DefaultCaller)
+	logger = log.With(logger, "listen", "8082", "caller", log.DefaultCaller)
 
 	repo := repositories.NewRepository()
+
+	config.InitConfig()
 
 	service := services.NewProductService(&repo)
 
