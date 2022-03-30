@@ -10,8 +10,8 @@ import (
 	"github.com/Israel-Ferreira/techweek-hands-on/products/exceptions"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/middlewares"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/services"
-	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 )
 
@@ -36,12 +36,20 @@ func NewHttpServer(svc services.ProductService, log log.Logger) *mux.Router {
 		options...,
 	)
 
+	createProductHandler := httptransport.NewServer(
+		endpoints.CreateProduct(svc),
+		decodeProductJsonBody,
+		encodeResponse,
+		options...,
+	)
+
 	r := mux.NewRouter()
 
 	r.Use(middlewares.JsonMiddleware)
 
 	r.Handle("/products", getProductsHandler).Methods(http.MethodGet)
-	r.Handle("/products/:sku", getProductHandler).Methods(http.MethodGet)
+	r.Handle("/products", createProductHandler).Methods(http.MethodPost)
+	r.Handle("/products/{sku}", getProductHandler).Methods(http.MethodGet)
 
 	return r
 }

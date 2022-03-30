@@ -59,7 +59,24 @@ func (s *productService) UpdateProduct(ctx context.Context, sku string, dto data
 }
 
 func (s *productService) CreateProduct(ctx context.Context, dto data.CreateProduct) (string, error) {
-	return "", nil
+	product := models.Product{
+		Sku:         dto.Sku,
+		Title:       dto.Title,
+		Description: dto.Description,
+		Brand:       dto.Brand,
+	}
+
+	if err := product.IsValid(); err != nil {
+		return "", err
+	}
+
+	productSku, err := s.repo.Create(product)
+
+	if err != nil {
+		return "", err
+	}
+
+	return productSku, nil
 }
 
 func NewProductService(repo repositories.ProductRepository) *productService {

@@ -64,3 +64,15 @@ func DeleteProduct(svc services.ProductService) endpoint.Endpoint {
 		return nil, nil
 	}
 }
+
+func UpdateProduct(svc services.ProductService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(data.UpdateProductReq)
+
+		if err := svc.UpdateProduct(ctx, req.Sku, req.UpdateProduct); err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	}
+}

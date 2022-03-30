@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/Israel-Ferreira/techweek-hands-on/products/exceptions"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
 	"gorm.io/gorm"
 )
@@ -23,7 +24,7 @@ func (r *repository) FindBySku(sku string) (models.Product, error) {
 	txn := r.db.First(&product, "sku = ?", sku)
 
 	if txn.Error != nil {
-		return product, txn.Error
+		return product, exceptions.ErrorNotFoundProduct
 	}
 
 	return product, nil
@@ -32,7 +33,7 @@ func (r *repository) FindBySku(sku string) (models.Product, error) {
 func (r *repository) FindAll() ([]models.Product, error) {
 	var products []models.Product
 
-	txn := r.db.Find(&products)
+	txn := r.db.Where(&products, "active = ?", true)
 
 	if txn.Error != nil {
 		return nil, txn.Error
@@ -64,7 +65,14 @@ func (r *repository) Delete(sku string) error {
 }
 
 func (r *repository) Create(product models.Product) (string, error) {
-	return "", nil
+
+	txn := r.db.Create(&product)
+
+	if txn.Error != nil {
+		return "", txn.Error
+	}
+
+	return product.Sku, nil
 }
 
 func NewRepository(db *gorm.DB) ProductRepository {
