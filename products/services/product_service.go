@@ -55,6 +55,19 @@ func (s *productService) DeleteBySku(ctx context.Context, sku string) error {
 }
 
 func (s *productService) UpdateProduct(ctx context.Context, sku string, dto data.UpdateProduct) error {
+
+	if sku == "" {
+		return exceptions.ErrorInvalidParam
+	}
+
+	if dto.Brand == "" || dto.Title == "" {
+		return exceptions.ErrorBodyIsNotValid
+	}
+
+	if err := s.repo.Update(sku, dto); err != nil {
+		return err
+	}
+
 	return nil
 }
 

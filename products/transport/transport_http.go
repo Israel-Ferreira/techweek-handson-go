@@ -50,6 +50,12 @@ func NewHttpServer(svc services.ProductService, log log.Logger) *mux.Router {
 		options...,
 	)
 
+	updateProduct := httptransport.NewServer(
+		endpoints.UpdateProduct(svc),
+		decodeParamAndUpdateBody,
+		encodeResponse,
+	)
+
 	r := mux.NewRouter()
 
 	r.Use(middlewares.JsonMiddleware)
@@ -58,6 +64,7 @@ func NewHttpServer(svc services.ProductService, log log.Logger) *mux.Router {
 	r.Handle("/products", createProductHandler).Methods(http.MethodPost)
 	r.Handle("/products/{sku}", getProductHandler).Methods(http.MethodGet)
 	r.Handle("/products/{sku}", deleteProductHandler).Methods(http.MethodDelete)
+	r.Handle("/products/{sku}", updateProduct).Methods(http.MethodPut)
 
 	return r
 }

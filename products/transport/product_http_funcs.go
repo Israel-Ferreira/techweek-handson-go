@@ -24,6 +24,21 @@ func decodeProductJsonBody(ctx context.Context, req *http.Request) (interface{},
 	return productDTO, nil
 }
 
+func decodeParamAndUpdateBody(ctx context.Context, req *http.Request) (interface{}, error) {
+	sku := mux.Vars(req)["sku"]
+
+	var updateDTO data.UpdateProduct
+
+	if err := json.NewDecoder(req.Body).Decode(&updateDTO); err != nil {
+		return nil, err
+	}
+
+	return data.UpdateProductReq{
+		UpdateProduct: updateDTO,
+		Sku:           sku,
+	}, nil
+}
+
 func decodeRequestWithParam(ctx context.Context, req *http.Request) (interface{}, error) {
 	sku := mux.Vars(req)["sku"]
 

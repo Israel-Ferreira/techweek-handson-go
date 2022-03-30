@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/exceptions"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
 	"gorm.io/gorm"
@@ -9,7 +10,7 @@ import (
 type ProductRepository interface {
 	FindBySku(string) (models.Product, error)
 	FindAll() ([]models.Product, error)
-	Update(string, models.Product) error
+	Update(string, data.UpdateProduct) error
 	Create(models.Product) (string, error)
 	Delete(string) error
 }
@@ -42,7 +43,19 @@ func (r *repository) FindAll() ([]models.Product, error) {
 	return products, nil
 }
 
-func (r *repository) Update(sku string, product models.Product) error {
+func (r *repository) Update(sku string, productDto data.UpdateProduct) error {
+	product, err := r.FindBySku(sku)
+
+	if err != nil {
+		return err
+	}
+
+	txn := r.db.Model(&product).Updates(models.Product{Title: productDto.Title, Description: productDto.Description, Brand: productDto.Brand})
+
+	if txn.Error != nil {
+		return txn.Error
+	}
+
 	return nil
 }
 
