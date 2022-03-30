@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
@@ -25,6 +26,8 @@ func GetProductEndpoint(svc services.ProductService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		sku := request.(string)
 
+		fmt.Println(sku)
+
 		response, err := svc.GetProductBySku(ctx, sku)
 
 		if err != nil {
@@ -47,5 +50,17 @@ func CreateProduct(svc services.ProductService) endpoint.Endpoint {
 
 		return productId, nil
 
+	}
+}
+
+func DeleteProduct(svc services.ProductService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		sku := request.(string)
+
+		if err := svc.DeleteBySku(ctx, sku); err != nil {
+			return nil, err
+		}
+
+		return nil, nil
 	}
 }

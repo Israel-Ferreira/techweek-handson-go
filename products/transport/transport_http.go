@@ -3,10 +3,10 @@ package transport
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
+	"github.com/Israel-Ferreira/techweek-hands-on/products/endpoints"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/exceptions"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/middlewares"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/services"
@@ -22,11 +22,26 @@ func NewHttpServer(svc services.ProductService, log log.Logger) *mux.Router {
 		httptransport.ServerErrorEncoder(encodeServerError),
 	}
 
-	fmt.Println(options)
+	getProductsHandler := httptransport.NewServer(
+		endpoints.GetProductsEndpoint(svc),
+		decode,
+		encodeResponse,
+		options...,
+	)
+
+	getProductHandler := httptransport.NewServer(
+		endpoints.GetProductEndpoint(svc),
+		decodeRequestWithParam,
+		encodeResponse,
+		options...,
+	)
 
 	r := mux.NewRouter()
 
 	r.Use(middlewares.JsonMiddleware)
+
+	r.Handle("/products", getProductsHandler).Methods(http.MethodGet)
+	r.Handle("/products/:sku", getProductHandler).Methods(http.MethodGet)
 
 	return r
 }

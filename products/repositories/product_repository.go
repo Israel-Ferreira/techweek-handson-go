@@ -1,6 +1,9 @@
 package repositories
 
-import "github.com/Israel-Ferreira/techweek-hands-on/products/models"
+import (
+	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
+	"gorm.io/gorm"
+)
 
 type ProductRepository interface {
 	FindBySku(string) (models.Product, error)
@@ -10,14 +13,32 @@ type ProductRepository interface {
 	Delete(string) error
 }
 
-type repository struct{}
+type repository struct {
+	db *gorm.DB
+}
 
 func (r *repository) FindBySku(sku string) (models.Product, error) {
-	return models.NewProduct(), nil
+	var product models.Product
+
+	txn := r.db.First(&product, "sku = ?", sku)
+
+	if txn.Error != nil {
+		return product, txn.Error
+	}
+
+	return product, nil
 }
 
 func (r *repository) FindAll() ([]models.Product, error) {
-	return nil, nil
+	var products []models.Product
+
+	txn := r.db.Find(&products)
+
+	if txn.Error != nil {
+		return nil, txn.Error
+	}
+
+	return products, nil
 }
 
 func (r *repository) Update(sku string, product models.Product) error {
@@ -32,6 +53,8 @@ func (r *repository) Create(product models.Product) (string, error) {
 	return "", nil
 }
 
-func NewRepository() ProductRepository {
-	return &repository{}
+func NewRepository(db *gorm.DB) ProductRepository {
+	return &repository{
+		db: db,
+	}
 }

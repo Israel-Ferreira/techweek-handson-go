@@ -19,11 +19,11 @@ func main() {
 	logger = log.NewLogfmtLogger(os.Stderr)
 	logger = log.With(logger, "listen", "8082", "caller", log.DefaultCaller)
 
-	repo := repositories.NewRepository()
-
 	config.InitConfig()
 
-	service := services.NewProductService(&repo)
+	repo := repositories.NewRepository(config.Db)
+
+	service := services.NewProductService(repo)
 
 	httpServer := transport.NewHttpServer(service, logger)
 

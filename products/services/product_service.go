@@ -17,11 +17,17 @@ type ProductService interface {
 }
 
 type productService struct {
-	repo *repositories.ProductRepository
+	repo repositories.ProductRepository
 }
 
 func (s *productService) GetProducts(ctx context.Context) ([]models.Product, error) {
-	return nil, nil
+	products, err := s.repo.FindAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }
 
 func (s *productService) GetProductBySku(ctx context.Context, sku string) (models.Product, error) {
@@ -40,7 +46,7 @@ func (s *productService) CreateProduct(ctx context.Context, dto data.CreateProdu
 	return "", nil
 }
 
-func NewProductService(repo *repositories.ProductRepository) *productService {
+func NewProductService(repo repositories.ProductRepository) *productService {
 	return &productService{
 		repo: repo,
 	}

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
 	"github.com/joho/godotenv"
 )
 
@@ -35,4 +36,6 @@ func LoadEnv() {
 func InitConfig() {
 	LoadEnv()
 	DbConfig(DbHost, DbPort, DbName, DbUser, DbPassword)
+
+	Db.AutoMigrate(&models.Product{})
 }
