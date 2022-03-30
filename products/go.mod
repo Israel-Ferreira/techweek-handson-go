@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/confluentinc/confluent-kafka-go v1.8.2 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.11.0 // indirect
@@ -23,6 +24,7 @@ require (
 	github.com/joho/godotenv v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect
 	golang.org/x/text v0.3.7 // indirect
+	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.8.2 // indirect
 	gorm.io/driver/postgres v1.3.1 // indirect
 	gorm.io/gorm v1.23.3 // indirect
 )
