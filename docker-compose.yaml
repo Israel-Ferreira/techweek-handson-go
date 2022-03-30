@@ -1,6 +1,5 @@
 version: "3.7"
 
-
 services:
   pg-stocks:
     image: postgres
@@ -16,7 +15,6 @@ services:
     networks:
       - techweek-net
 
-
   pg-products:
     image: postgres
 
@@ -31,6 +29,29 @@ services:
     networks:
       - techweek-net
 
+  product-service:
+    container_name: product-ms
+    build:
+      context: ./products
+
+    ports:
+      - 8082:8082
+
+    depends_on:
+      - pg-products
+      - kafka
+
+    environment:
+      - DB_HOST=pg-products
+      - DB_PORT=5432
+      - DB_NAME=products
+      - DB_USER=admin
+      - DB_PASSWORD=postgres
+      - KAFKA_URL=kafka:9092
+
+
+    networks:
+      - techweek-net
 
   pg-prices:
     image: postgres
@@ -46,10 +67,9 @@ services:
     networks:
       - techweek-net
 
-
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
-    networks: 
+    networks:
       - techweek-net
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -57,7 +77,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    networks: 
+    networks:
       - techweek-net
     depends_on:
       - zookeeper
@@ -73,7 +93,7 @@ services:
 
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
-    networks: 
+    networks:
       - techweek-net
     depends_on:
       - kafka
@@ -81,10 +101,6 @@ services:
       - 19000:9000
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
-  
-
-
-
 
 networks:
   techweek-net:
