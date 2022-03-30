@@ -33,7 +33,7 @@ func (r *repository) FindBySku(sku string) (models.Product, error) {
 func (r *repository) FindAll() ([]models.Product, error) {
 	var products []models.Product
 
-	txn := r.db.Where(&products, "active = ?", true)
+	txn := r.db.Find(&products, "active = ?", true)
 
 	if txn.Error != nil {
 		return nil, txn.Error
