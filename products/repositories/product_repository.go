@@ -46,6 +46,20 @@ func (r *repository) Update(sku string, product models.Product) error {
 }
 
 func (r *repository) Delete(sku string) error {
+	var product models.Product
+
+	txnFindById := r.db.Find(&product, "sku = ?", sku)
+
+	if txnFindById.Error != nil {
+		return txnFindById.Error
+	}
+
+	txnUpdate := r.db.Model(&product).Update("active", false)
+
+	if txnUpdate.Error != nil {
+		return txnUpdate.Error
+	}
+
 	return nil
 }
 

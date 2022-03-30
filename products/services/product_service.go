@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
+	"github.com/Israel-Ferreira/techweek-hands-on/products/exceptions"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/repositories"
 )
@@ -31,10 +32,25 @@ func (s *productService) GetProducts(ctx context.Context) ([]models.Product, err
 }
 
 func (s *productService) GetProductBySku(ctx context.Context, sku string) (models.Product, error) {
-	return models.NewProduct(), nil
+	product, err := s.repo.FindBySku(sku)
+
+	if err != nil {
+		return models.Product{}, err
+	}
+
+	return product, nil
 }
 
 func (s *productService) DeleteBySku(ctx context.Context, sku string) error {
+
+	if sku == "" {
+		return exceptions.ErrorInvalidParam
+	}
+
+	if err := s.repo.Delete(sku); err != nil {
+		return err
+	}
+
 	return nil
 }
 
