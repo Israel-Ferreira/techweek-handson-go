@@ -10,6 +10,7 @@ import (
 var Producer *kafka.Producer
 
 func CreateProducer(bootstrapServer string) (*kafka.Producer, error) {
+	fmt.Println(bootstrapServer)
 	config := &kafka.ConfigMap{"bootstrap.servers": bootstrapServer}
 
 	fmt.Println(config)

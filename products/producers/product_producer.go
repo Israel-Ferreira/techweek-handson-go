@@ -2,6 +2,7 @@ package producers
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/Israel-Ferreira/techweek-hands-on/products/config"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
@@ -34,6 +35,9 @@ func (p ProductProducer) SendNewProductEventMsg(product models.Product) error {
 	if err := msg.IsValidEvent(); err != nil {
 		return err
 	}
+	
+
+	fmt.Print(p.Kafka.Logs())
 
 	if err := p.sendMsg(msg); err != nil {
 		return err
@@ -49,6 +53,7 @@ func (p ProductProducer) SendDeleteEventMsg(sku string) error {
 		return err
 	}
 
+	
 	if err := p.sendMsg(msg); err != nil {
 		return err
 	}
