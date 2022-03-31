@@ -9,11 +9,13 @@ import (
 )
 
 var (
-	DbHost     string
-	DbPort     string
-	DbName     string
-	DbUser     string
-	DbPassword string
+	DbHost      string
+	DbPort      string
+	DbName      string
+	DbUser      string
+	DbPassword  string
+	KafkaServer string
+	KafkaTopic  string
 )
 
 func LoadEnv() {
@@ -30,12 +32,16 @@ func LoadEnv() {
 	DbUser = os.Getenv("DB_USER")
 
 	DbPassword = os.Getenv("DB_PASSWORD")
+	KafkaServer = os.Getenv("KAFKA_SERVER")
+	KafkaTopic = os.Getenv("KAFKA_TOPIC")
 
 }
 
 func InitConfig() {
 	LoadEnv()
 	DbConfig(DbHost, DbPort, DbName, DbUser, DbPassword)
+
+	SetProducer(KafkaServer)
 
 	Db.AutoMigrate(&models.Product{})
 }

@@ -2,11 +2,14 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/exceptions"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
+	"github.com/Israel-Ferreira/techweek-hands-on/products/producers"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/repositories"
+	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
 type ProductService interface {
@@ -18,7 +21,8 @@ type ProductService interface {
 }
 
 type productService struct {
-	repo repositories.ProductRepository
+	repo  repositories.ProductRepository
+	kafka producers.ProductProducer
 }
 
 func (s *productService) GetProducts(ctx context.Context) ([]models.Product, error) {
@@ -51,6 +55,10 @@ func (s *productService) DeleteBySku(ctx context.Context, sku string) error {
 		return err
 	}
 
+	if err := s.kafka.SendDeleteEventMsg(sku); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -65,6 +73,10 @@ func (s *productService) UpdateProduct(ctx context.Context, sku string, dto data
 	}
 
 	if err := s.repo.Update(sku, dto); err != nil {
+		return err
+	}
+
+	if err := s.kafka.SendUpdateProductMsg(models.Product{Sku: sku, Title: dto.Title}); err != nil {
 		return err
 	}
 
@@ -89,11 +101,19 @@ func (s *productService) CreateProduct(ctx context.Context, dto data.CreateProdu
 		return "", err
 	}
 
+	if err := s.kafka.SendNewProductEventMsg(product); err != nil {
+		return "", err
+	}
+
 	return productSku, nil
 }
 
-func NewProductService(repo repositories.ProductRepository) *productService {
+func NewProductService(repo repositories.ProductRepository, producer *kafka.Producer) *productService {
+	
+	fmt.Println(producer != nil)
+
 	return &productService{
-		repo: repo,
+		repo:  repo,
+		kafka: producers.ProductProducer{Kafka: producer},
 	}
 }

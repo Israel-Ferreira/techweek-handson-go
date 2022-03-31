@@ -1,5 +1,7 @@
 package data
 
+import "github.com/Israel-Ferreira/techweek-hands-on/products/exceptions"
+
 var VALID_EVENTS = []string{"DELETE_PRODUCT", "NEW_PRODUCT", "UPDATE_PRODUCT"}
 
 type EventProductMsg struct {
@@ -17,8 +19,9 @@ func (p *EventProductMsg) IsValidEvent() error {
 		}
 	}
 
-
 	if !eventIsFound {
-		return
+		return exceptions.ErrorInvalidEvent
 	}
+
+	return nil
 }

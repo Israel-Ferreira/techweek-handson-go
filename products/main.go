@@ -21,7 +21,7 @@ func main() {
 
 	repo := repositories.NewRepository(config.Db)
 
-	service := services.NewProductService(repo)
+	service := services.NewProductService(repo, config.Producer)
 
 	httpServer := transport.NewHttpServer(service, logger)
 
