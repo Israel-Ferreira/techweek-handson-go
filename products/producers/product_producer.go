@@ -79,7 +79,7 @@ func (p ProductProducer) sendMsg(msg data.EventProductMsg) error {
 		Value: jsonResp,
 		TopicPartition: kafka.TopicPartition{
 			Topic:     &topic,
-			Partition: kafka.PartitionAny,
+			Partition:  kafka.PartitionAny,
 		},
 	}
 
