@@ -29,30 +29,30 @@ services:
     networks:
       - techweek-net
 
-  product-service:
-    container_name: product-ms
-    build:
-      context: ./products
+  # product-service:
+  #   container_name: product-ms
+  #   build:
+  #     context: ./products
 
-    ports:
-      - 8082:8082
+  #   ports:
+  #     - 8082:8082
 
-    depends_on:
-      - pg-products
-      - kafka
+  #   depends_on:
+  #     - pg-products
+  #     - kafka
 
-    environment:
-      - DB_HOST=pg-products
-      - DB_PORT=5432
-      - DB_NAME=products
-      - DB_USER=admin
-      - DB_PASSWORD=postgres
-      - KAFKA_SERVER=kafka:29092
-      - KAFKA_TOPIC=live-products
+  #   environment:
+  #     - DB_HOST=pg-products
+  #     - DB_PORT=5432
+  #     - DB_NAME=products
+  #     - DB_USER=admin
+  #     - DB_PASSWORD=postgres
+  #     - KAFKA_SERVER=kafka:29092
+  #     - KAFKA_TOPIC=live-products
 
 
-    networks:
-      - techweek-net
+  #   networks:
+  #     - techweek-net
 
   pg-prices:
     image: postgres

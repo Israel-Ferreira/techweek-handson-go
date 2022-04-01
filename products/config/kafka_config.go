@@ -2,34 +2,22 @@ package config
 
 import (
 	"fmt"
-	"log"
 
-	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+	"github.com/segmentio/kafka-go"
 )
 
-var Producer *kafka.Producer
+var Producer *kafka.Writer
 
-func CreateProducer(bootstrapServer string) (*kafka.Producer, error) {
+func CreateProducer(bootstrapServer string) *kafka.Writer {
 	fmt.Println(bootstrapServer)
-	config := &kafka.ConfigMap{"bootstrap.servers": bootstrapServer}
 
-	fmt.Println(config)
-
-	prdc, err := kafka.NewProducer(config)
-
-	if err != nil {
-		return nil, err
+	return &kafka.Writer{
+		Addr:     kafka.TCP(bootstrapServer),
+		Topic:    KafkaTopic,
+		Balancer: &kafka.LeastBytes{},
 	}
-
-	return prdc, nil
 }
 
 func SetProducer(bootstrapServer string) {
-	prd, err := CreateProducer(bootstrapServer)
-
-	if err != nil {
-		log.Fatalln("erro ao conectar com o kafka")
-	}
-
-	Producer = prd
+	Producer = CreateProducer(bootstrapServer)
 }

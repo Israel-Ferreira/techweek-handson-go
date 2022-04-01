@@ -1,17 +1,16 @@
 package producers
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
 
-	"github.com/Israel-Ferreira/techweek-hands-on/products/config"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/data"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
-	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+	"github.com/segmentio/kafka-go"
 )
 
 type ProductProducer struct {
-	Kafka *kafka.Producer
+	Kafka *kafka.Writer
 }
 
 func (p ProductProducer) SendUpdateProductMsg(product models.Product) error {
@@ -35,9 +34,6 @@ func (p ProductProducer) SendNewProductEventMsg(product models.Product) error {
 	if err := msg.IsValidEvent(); err != nil {
 		return err
 	}
-	
-
-	fmt.Print(p.Kafka.Logs())
 
 	if err := p.sendMsg(msg); err != nil {
 		return err
@@ -53,7 +49,6 @@ func (p ProductProducer) SendDeleteEventMsg(sku string) error {
 		return err
 	}
 
-	
 	if err := p.sendMsg(msg); err != nil {
 		return err
 	}
@@ -72,20 +67,12 @@ func (p ProductProducer) sendMsg(msg data.EventProductMsg) error {
 		"sku": msg.Sku,
 	}
 
-	topic := config.KafkaTopic
-
 	message := &kafka.Message{
 		Key:   []byte(key["sku"]),
 		Value: jsonResp,
-		TopicPartition: kafka.TopicPartition{
-			Topic:     &topic,
-			Partition:  kafka.PartitionAny,
-		},
 	}
 
-	deliveryChan := make(chan kafka.Event, 10000)
-
-	if err = p.Kafka.Produce(message, deliveryChan); err != nil {
+	if err = p.Kafka.WriteMessages(context.Background(), *message); err != nil {
 		return err
 	}
 

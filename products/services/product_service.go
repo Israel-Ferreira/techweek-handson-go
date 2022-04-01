@@ -9,7 +9,7 @@ import (
 	"github.com/Israel-Ferreira/techweek-hands-on/products/models"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/producers"
 	"github.com/Israel-Ferreira/techweek-hands-on/products/repositories"
-	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
+	"github.com/segmentio/kafka-go"
 )
 
 type ProductService interface {
@@ -108,7 +108,7 @@ func (s *productService) CreateProduct(ctx context.Context, dto data.CreateProdu
 	return productSku, nil
 }
 
-func NewProductService(repo repositories.ProductRepository, producer *kafka.Producer) *productService {
+func NewProductService(repo repositories.ProductRepository, producer *kafka.Writer) *productService {
 	
 	fmt.Println(producer != nil)
 
