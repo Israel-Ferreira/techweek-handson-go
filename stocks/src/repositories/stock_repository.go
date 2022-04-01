@@ -8,6 +8,8 @@ import (
 type StockRepository interface {
 	CreateStockItem(models.Stock) error
 	DeleteStockItemBySku(string) error
+	ListItems() ([]models.Stock, error)
+	GetStockItem(sku string) (models.Stock, error)
 }
 
 type stockRepository struct {
@@ -31,8 +33,6 @@ func (sr stockRepository) CreateStockItem(stockItem models.Stock) error {
 
 func (sr stockRepository) DeleteStockItemBySku(sku string) error {
 
-	
-
 	txn := sr.db.Delete(&models.Stock{Sku: sku}, "sku = ?", sku)
 
 	if txn.Error != nil {
@@ -40,6 +40,31 @@ func (sr stockRepository) DeleteStockItemBySku(sku string) error {
 	}
 
 	return nil
+}
+
+func (sr stockRepository) ListItems() ([]models.Stock, error) {
+	var stockItens []models.Stock
+
+	txn := sr.db.Find(&stockItens)
+
+	if txn.Error != nil {
+		return nil, txn.Error
+	}
+
+	return stockItens, nil
+}
+
+func (sr stockRepository) GetStockItem(sku string) (models.Stock, error) {
+
+	var stockItem models.Stock
+
+	txn := sr.db.First(&stockItem, "sku = ?", sku)
+
+	if txn.Error != nil {
+		return models.NewStock(), txn.Error
+	}
+
+	return stockItem, nil
 }
 
 func NewStockRepository(db *gorm.DB) *stockRepository {
