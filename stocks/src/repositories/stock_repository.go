@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/Israel-Ferreira/techweek-hands-on/stocks/src/data"
 	"github.com/Israel-Ferreira/techweek-hands-on/stocks/src/models"
 	"gorm.io/gorm"
 )
@@ -10,6 +11,8 @@ type StockRepository interface {
 	DeleteStockItemBySku(string) error
 	ListItems() ([]models.Stock, error)
 	GetStockItem(sku string) (models.Stock, error)
+	AddStockQty(sku string, data data.StockQuantity) (models.Stock, error)
+	SubstractStockQty(sku string, data data.StockQuantity) (models.Stock, error)
 }
 
 type stockRepository struct {
@@ -65,6 +68,42 @@ func (sr stockRepository) GetStockItem(sku string) (models.Stock, error) {
 	}
 
 	return stockItem, nil
+}
+
+func (sr stockRepository) AddStockQty(sku string, data data.StockQuantity) (models.Stock, error) {
+	stock, err := sr.GetStockItem(sku)
+
+	if err != nil {
+		return models.NewStock(), err
+	}
+
+	currentQty := stock.CurrentQty + data.Qty
+
+	txn := sr.db.Model(&stock).Update("current_qty", currentQty)
+
+	if txn.Error != nil {
+		return models.NewStock(), txn.Error
+	}
+
+	return stock, nil
+}
+
+func (sr stockRepository) SubstractStockQty(sku string, data data.StockQuantity) (models.Stock, error) {
+	stock, err := sr.GetStockItem(sku)
+
+	if err != nil {
+		return models.NewStock(), err
+	}
+
+	currentQty := stock.CurrentQty - data.Qty
+
+	txn := sr.db.Model(&stock).Update("current_qty", currentQty)
+
+	if txn.Error != nil {
+		return models.NewStock(), txn.Error
+	}
+
+	return stock, nil
 }
 
 func NewStockRepository(db *gorm.DB) *stockRepository {
