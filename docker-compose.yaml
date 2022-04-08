@@ -29,7 +29,6 @@ services:
     networks:
       - techweek-net
 
-
   pg-prices:
     image: postgres
 
@@ -52,7 +51,6 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
 
-
   product-service:
     container_name: product-ms
     build:
@@ -74,10 +72,8 @@ services:
       - KAFKA_SERVER=kafka:29092
       - KAFKA_TOPIC=live-products
 
-
     networks:
       - techweek-net
-
 
   stock-service:
     container_name: stock-ms
@@ -100,6 +96,29 @@ services:
       - KAFKA_SERVER=kafka:29092
       - KAFKA_TOPIC=live-products
 
+    networks:
+      - techweek-net
+
+  price-service:
+    container_name: price-ms
+    build:
+      context: ./prices
+
+    ports:
+      - 8084:8084
+
+    depends_on:
+      - pg-prices
+      - kafka
+
+    environment:
+      - DB_HOST=pg-prices
+      - DB_PORT=5432
+      - DB_NAME=prices
+      - DB_USER=admin
+      - DB_PASSWORD=postgres
+      - KAFKA_SERVER=kafka:29092
+      - KAFKA_TOPIC=live-products
 
     networks:
       - techweek-net
