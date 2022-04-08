@@ -6,6 +6,7 @@ import (
 
 	"github.com/Israel-Ferreira/techweek-hands-on/prices/src/models"
 	"github.com/joho/godotenv"
+	"github.com/segmentio/kafka-go"
 )
 
 var (
@@ -16,6 +17,8 @@ var (
 	DbPassword  string
 	KafkaServer string
 	KafkaTopic  string
+
+	KafkaProductConsumer *kafka.Reader
 )
 
 func LoadEnv() {
@@ -39,6 +42,8 @@ func InitConfig() {
 	LoadEnv()
 
 	DbConfig(DbHost, DbPort, DbName, DbUser, DbPassword)
+
+	KafkaProductConsumer = ConsumerConfig(KafkaServer, KafkaTopic, "price")
 
 	Db.AutoMigrate(&models.Price{})
 }

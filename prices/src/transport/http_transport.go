@@ -5,21 +5,51 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-kit/kit/log"
+	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 
 	"github.com/Israel-Ferreira/techweek-hands-on/prices/src/data"
+	"github.com/Israel-Ferreira/techweek-hands-on/prices/src/endpoint"
 	"github.com/Israel-Ferreira/techweek-hands-on/prices/src/middlewares"
+	"github.com/Israel-Ferreira/techweek-hands-on/prices/src/services"
 	"github.com/Israel-Ferreira/techweek-hands-on/prices/src/utils"
 )
 
-func NewServer() *mux.Router {
+func NewServer(svc services.PriceService, log log.Logger) *mux.Router {
 	r := mux.NewRouter()
 
 	r.Use(middlewares.JsonMiddleware)
 
-	r.Handle("/prices", nil).Methods(http.MethodGet)
-	r.Handle("/prices/{id}", nil).Methods(http.MethodGet)
-	r.Handle("/prices/{id}", nil).Methods(http.MethodPut)
+	options := []httptransport.ServerOption{
+		httptransport.ServerErrorLogger(log),
+		httptransport.ServerErrorEncoder(encodeErrorResp),
+	}
+
+	getPricesItemsHandler := httptransport.NewServer(
+		endpoint.GetAllPrices(svc),
+		decode,
+		encodeResponse,
+		options...,
+	)
+
+	getPriceItemHandler := httptransport.NewServer(
+		endpoint.GetBySKU(svc),
+		decodeRequestWithParam,
+		encodeResponse,
+		options...,
+	)
+
+	updatePriceHandler := httptransport.NewServer(
+		endpoint.UpdatePrice(svc),
+		decodeRequestBodyWithParam,
+		encodeResponse,
+		options...,
+	)
+
+	r.Handle("/prices", getPricesItemsHandler).Methods(http.MethodGet)
+	r.Handle("/prices/{sku}", getPriceItemHandler).Methods(http.MethodGet)
+	r.Handle("/prices/{sku}", updatePriceHandler).Methods(http.MethodPut)
 
 	return r
 }
